@@ -3,7 +3,44 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.Azure.Domain", "Naos.Azure.Domain\Naos.Azure.Domain.csproj", "{2FF77BF1-1C00-4DA8-BD01-425B0D5ADDAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.Azure.Domain.Test", "Naos.Azure.Domain.Test\Naos.Azure.Domain.Test.csproj", "{5E4ACAB8-4F51-4726-9560-1716D77C417A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.Azure.Serialization.Bson", "Naos.Azure.Serialization.Bson\Naos.Azure.Serialization.Bson.csproj", "{90C0F0F3-CCCC-4787-AC0C-398261A34712}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.Azure.Serialization.Json", "Naos.Azure.Serialization.Json\Naos.Azure.Serialization.Json.csproj", "{36545B58-3A58-418B-B8DE-4F25BB064199}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E8F5CFC4-D16C-4D10-865B-7BE9A8F19C86}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2FF77BF1-1C00-4DA8-BD01-425B0D5ADDAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FF77BF1-1C00-4DA8-BD01-425B0D5ADDAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FF77BF1-1C00-4DA8-BD01-425B0D5ADDAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FF77BF1-1C00-4DA8-BD01-425B0D5ADDAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E4ACAB8-4F51-4726-9560-1716D77C417A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E4ACAB8-4F51-4726-9560-1716D77C417A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E4ACAB8-4F51-4726-9560-1716D77C417A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E4ACAB8-4F51-4726-9560-1716D77C417A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90C0F0F3-CCCC-4787-AC0C-398261A34712}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90C0F0F3-CCCC-4787-AC0C-398261A34712}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90C0F0F3-CCCC-4787-AC0C-398261A34712}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90C0F0F3-CCCC-4787-AC0C-398261A34712}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36545B58-3A58-418B-B8DE-4F25BB064199}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36545B58-3A58-418B-B8DE-4F25BB064199}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36545B58-3A58-418B-B8DE-4F25BB064199}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36545B58-3A58-418B-B8DE-4F25BB064199}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
