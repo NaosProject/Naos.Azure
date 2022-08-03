@@ -9,6 +9,7 @@ namespace Naos.Azure.Serialization.Json
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Naos.Database.Serialization.Json;
     using OBeautifulCode.Serialization.Json;
     using OBeautifulCode.Type;
     using OBeautifulCode.Type.Recipes;
@@ -25,7 +26,10 @@ namespace Naos.Azure.Serialization.Json
 
         /// <inheritdoc />
         protected override IReadOnlyCollection<JsonSerializationConfigurationType> DependentJsonSerializationConfigurationTypes =>
-            new JsonSerializationConfigurationType[0];
+            new[]
+            {
+                typeof(DatabaseJsonSerializationConfiguration).ToJsonSerializationConfigurationType(),
+            };
 
         /// <inheritdoc />
         protected override IReadOnlyCollection<TypeToRegisterForJson> TypesToRegisterForJson => new Type[0]

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Class1Test.cs" company="Naos Project">
+// <copyright file="BlobStreamTest.cs" company="Naos Project">
 //    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -15,7 +15,7 @@ namespace Naos.Azure.Protocol.Blob.Client.Test
     /// <summary>
     /// TODO: Starting point for new project.
     /// </summary>
-    public static partial class Class1Test
+    public static partial class BlobStreamTest
     {
         [Fact]
         public static void Method___Should_do_something___When_called()
