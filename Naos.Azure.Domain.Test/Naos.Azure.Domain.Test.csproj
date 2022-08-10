@@ -255,6 +255,13 @@
     <Compile Include=".recipes\OBeautifulCode.Type\TypeDummyFactory.cs" />
     <Compile Include=".recipes\OBeautifulCode.Type\TypeDummyFactory.designer.cs" />
     <Compile Include=".recipes\OBeautifulCode.Type\TypeExtensions.cs" />
+    <Compile Include="AzureDummyFactoryTest.designer.cs">
+      <DependentUpon>AzureDummyFactoryTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ConnectionStringBlobContainerResourceLocatorTest.cs" />
+    <Compile Include="ConnectionStringBlobContainerResourceLocatorTest.designer.cs">
+      <DependentUpon>ConnectionStringBlobContainerResourceLocatorTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="ConsoleAbstraction.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
