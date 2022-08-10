@@ -9,13 +9,21 @@ namespace Naos.Azure.Protocol.Blob.Client
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.Linq;
+    using System.Security.Cryptography;
+    using global::Azure.Storage;
+    using global::Azure.Storage.Blobs;
+    using global::Azure.Storage.Blobs.Models;
     using Naos.Azure.Domain;
     using Naos.CodeAnalysis.Recipes;
     using Naos.Database.Domain;
     using OBeautifulCode.Assertion.Recipes;
+    using OBeautifulCode.Execution.Recipes;
     using OBeautifulCode.Representation.System;
     using OBeautifulCode.Serialization;
+    using OBeautifulCode.String.Recipes;
+    using OBeautifulCode.Type;
     using static System.FormattableString;
 
     /// <summary>
@@ -88,9 +96,26 @@ namespace Naos.Azure.Protocol.Blob.Client
                                    })
                               .Single();
 
-            var resourceLocator = this.TryGetSingleLocator(operation);
-
-            throw new System.NotImplementedException();
+            var containerClient = this.TryGetContainerClient(operation);
+            var blobClient = containerClient.GetBlobClient(id);
+            using (var destinationStream = new MemoryStream())
+            {
+                var downloadResponse = blobClient.DownloadTo(destinationStream);
+                downloadResponse.IsError.MustForOp("Error in response").BeFalse(downloadResponse.ReasonPhrase);
+                var resultMetadata = new StreamRecordMetadata(
+                    id,
+                    this.DefaultSerializerRepresentation,
+                    identifierTypeRepresentation.ToWithAndWithoutVersion(),
+                    objectTypeRepresentation.ToWithAndWithoutVersion(),
+                    new NamedValue<string>[0],
+                    DateTime.UtcNow,
+                    null);
+                var result = new StreamRecord(
+                    -1,
+                    resultMetadata,
+                    new BinaryDescribedSerialization(objectTypeRepresentation, this.DefaultSerializerRepresentation, destinationStream.ToArray()));
+                return result;
+            }
         }
 
         /// <inheritdoc />
@@ -104,11 +129,39 @@ namespace Naos.Azure.Protocol.Blob.Client
         public override PutRecordResult Execute(
             StandardPutRecordOp operation)
         {
-            operation.ExistingRecordStrategy.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.ExistingRecordStrategy)}")).BeEqualTo(ExistingRecordStrategy.None, Invariant($"No support for {nameof(ExistingRecordStrategy)}."));
-            operation.Payload.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.Payload)}")).BeAssignableToType<BinaryDescribedSerialization>(Invariant($"Only binary payloads supported."));
-            var resourceLocator = this.TryGetSingleLocator(operation);
+            operation.ExistingRecordStrategy.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.ExistingRecordStrategy)}"))
+                     .BeEqualTo(ExistingRecordStrategy.None, Invariant($"No support for {nameof(ExistingRecordStrategy)}."));
+            operation.Payload.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.Payload)}"))
+                     .BeAssignableToType<BinaryDescribedSerialization>(Invariant($"Only binary payloads supported."));
+            var containerClient = this.TryGetContainerClient(operation);
 
-            throw new System.NotImplementedException();
+            var tags = operation
+                      .Metadata
+                      .Tags
+                     ?.Select(_ => new KeyValuePair<string, string>(_.Name, _.Value))
+                      .ToDictionary(k => k.Key, v => v.Value)
+                    ?? new Dictionary<string, string>();
+
+            if (operation.Metadata.ObjectTimestampUtc != null)
+            {
+                tags.Add(
+                    nameof(operation.Metadata.ObjectTimestampUtc),
+                    operation.Metadata.ObjectTimestampUtc.ToStringInvariantPreferred());
+            }
+
+            var binaryPayload = (BinaryDescribedSerialization)operation.Payload;
+
+            var blobClient = containerClient.GetBlobClient(operation.Metadata.StringSerializedId);
+            var blobUploadOptions = new BlobUploadOptions
+                                    {
+                                        Tags = tags,
+                                    };
+
+            var binaryData = new BinaryData(binaryPayload.SerializedPayload);
+            blobClient.Upload(binaryData, blobUploadOptions);
+
+            var result = new PutRecordResult(-1);
+            return result;
         }
 
         /// <inheritdoc />
@@ -171,9 +224,14 @@ namespace Naos.Azure.Protocol.Blob.Client
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Ids)}"))
                      .BeNull();
 
-            var resourceLocator = this.TryGetSingleLocator(operation);
+            var containerClient = this.TryGetContainerClient(operation);
 
-            throw new System.NotImplementedException();
+            var blobs = containerClient.GetBlobs(BlobTraits.None, BlobStates.None);
+            var result = blobs
+                        .Select(_ => new StringSerializedIdentifier(_.Name, identifierType))
+                        .ToList();
+
+            return result;
         }
 
         /// <inheritdoc />
@@ -207,12 +265,14 @@ namespace Naos.Azure.Protocol.Blob.Client
         /// <inheritdoc />
         public override IStreamRepresentation StreamRepresentation => new StreamRepresentation(this.Name);
 
-        private BlobResourceLocator TryGetSingleLocator(
+        private BlobContainerClient TryGetContainerClient(
             ISpecifyResourceLocator operation = null)
         {
             var resourceLocator =
-                (BlobResourceLocator)(operation?.SpecifiedResourceLocator ?? this.ResourceLocatorProtocols.Execute(new GetAllResourceLocatorsOp()).Single());
-            return resourceLocator;
+                (ConnectionStringBlobContainerResourceLocator)(operation?.SpecifiedResourceLocator ?? this.ResourceLocatorProtocols.Execute(new GetAllResourceLocatorsOp()).Single());
+            var serviceClient = new BlobServiceClient(resourceLocator.ConnectionString);
+            var containerClient = serviceClient.GetBlobContainerClient(resourceLocator.ContainerName);
+            return containerClient;
         }
     }
 }
