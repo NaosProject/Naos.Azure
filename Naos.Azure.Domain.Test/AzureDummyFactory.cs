@@ -10,10 +10,12 @@
 namespace Naos.Azure.Domain.Test
 {
     using System;
-
+    using System.Collections.Generic;
     using FakeItEasy;
-
+    using Naos.Database.Domain;
+    using OBeautifulCode.Assertion.Recipes;
     using OBeautifulCode.AutoFakeItEasy;
+    using OBeautifulCode.Serialization;
 
     /// <summary>
     /// A Dummy Factory for types in <see cref="Naos.Azure.Domain"/>.
@@ -30,6 +32,22 @@ namespace Naos.Azure.Domain.Test
         public AzureDummyFactory()
         {
             /* Add any overriding or custom registrations here. */
+
+            AutoFixtureBackedDummyFactory.AddDummyCreator(
+                () =>
+                {
+                    var locators = A.Dummy<IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>>();
+                    locators.Count.MustForTest().BeGreaterThanOrEqualTo(1);
+
+                    var streamAccessKinds = A.Dummy<StreamAccessKinds>().ThatIsNot(StreamAccessKinds.None);
+
+                    return new AzureBlobStreamConfig(
+                        A.Dummy<string>(),
+                        streamAccessKinds,
+                        A.Dummy<SerializerRepresentation>(),
+                        A.Dummy<SerializationFormat>(),
+                        locators);
+                });
         }
     }
 }
