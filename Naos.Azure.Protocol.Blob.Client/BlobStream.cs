@@ -31,13 +31,16 @@ namespace Naos.Azure.Protocol.Blob.Client
     /// <summary>
     /// Thin Azure Blob implementation of <see cref="IStandardStream"/>.
     /// </summary>
-    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = NaosSuppressBecause.CA1506_AvoidExcessiveClassCoupling_DisagreeWithAssessment)]
-    [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix", Justification = NaosSuppressBecause.CA1711_IdentifiersShouldNotHaveIncorrectSuffix_TypeNameAddedAsSuffixForTestsWhereTypeIsPrimaryConcern)]
-    public partial class BlobStream : StandardStreamBase, IDisposable
+    [SuppressMessage(
+        "Microsoft.Maintainability",
+        "CA1506:AvoidExcessiveClassCoupling",
+        Justification = NaosSuppressBecause.CA1506_AvoidExcessiveClassCoupling_DisagreeWithAssessment)]
+    [SuppressMessage(
+        "Microsoft.Naming",
+        "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
+        Justification = NaosSuppressBecause.CA1711_IdentifiersShouldNotHaveIncorrectSuffix_TypeNameAddedAsSuffixForTestsWhereTypeIsPrimaryConcern)]
+    public partial class BlobStream : StandardStreamBase
     {
-        private readonly object httpClientLock = new object();
-        private HttpClient httpClient;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BlobStream"/> class.
         /// </summary>
@@ -64,6 +67,7 @@ namespace Naos.Azure.Protocol.Blob.Client
         }
 
         /// <inheritdoc />
+        [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = NaosSuppressBecause.CA1506_AvoidExcessiveClassCoupling_DisagreeWithAssessment)]
         public override StreamRecord Execute(
             StandardGetLatestRecordOp operation)
         {
@@ -81,15 +85,17 @@ namespace Naos.Azure.Protocol.Blob.Client
             operation.RecordFilter.InternalRecordIds.MustForArg(
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.InternalRecordIds)}"))
                      .BeNull();
-            operation.RecordFilter.ObjectTypes.Single().MustForArg(
-                          Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.ObjectTypes)}"))
+            operation.RecordFilter.ObjectTypes.Single()
+                     .MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.ObjectTypes)}"))
                      .BeEqualTo(objectTypeRepresentation);
             operation.RecordFilter.Tags.MustForArg(
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Tags)}"))
                      .BeNull();
             operation.RecordFilter.Ids.MustForArg(
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Ids)}"))
-                     .NotBeEmptyEnumerable().And().HaveCount(1);
+                     .NotBeEmptyEnumerable()
+                     .And()
+                     .HaveCount(1);
 
             var id = operation.RecordFilter.Ids.Select(
                                    _ =>
@@ -102,26 +108,36 @@ namespace Naos.Azure.Protocol.Blob.Client
                                    })
                               .Single();
 
-            var containerClient = this.TryGetContainerClient(operation);
-            var blobClient = containerClient.GetBlobClient(id);
-            using (var destinationStream = new MemoryStream())
-            {
-                var downloadResponse = blobClient.DownloadTo(destinationStream);
-                downloadResponse.IsError.MustForOp("Error in response").BeFalse(downloadResponse.ReasonPhrase);
-                var resultMetadata = new StreamRecordMetadata(
-                    id,
-                    this.DefaultSerializerRepresentation,
-                    identifierTypeRepresentation.ToWithAndWithoutVersion(),
-                    objectTypeRepresentation.ToWithAndWithoutVersion(),
-                    new NamedValue<string>[0],
-                    DateTime.UtcNow,
-                    null);
-                var result = new StreamRecord(
-                    -1,
-                    resultMetadata,
-                    new BinaryDescribedSerialization(objectTypeRepresentation, this.DefaultSerializerRepresentation, destinationStream.ToArray()));
-                return result;
-            }
+            StreamRecord result = null;
+            this.RunContainerClientOperation(
+                operation,
+                containerClient =>
+                {
+                    var blobClient = containerClient.GetBlobClient(id);
+                    var blobProperties = blobClient.GetProperties();
+                    using (var destinationStream = new MemoryStream())
+                    {
+                        var downloadResponse = blobClient.DownloadTo(destinationStream);
+                        downloadResponse.IsError.MustForOp("Error in response").BeFalse(downloadResponse.ReasonPhrase);
+                        var resultMetadata = new StreamRecordMetadata(
+                            id,
+                            this.DefaultSerializerRepresentation,
+                            identifierTypeRepresentation.ToWithAndWithoutVersion(),
+                            objectTypeRepresentation.ToWithAndWithoutVersion(),
+                            new NamedValue<string>[0],
+                            DateTime.UtcNow,
+                            null);
+                        result = new StreamRecord(
+                            blobProperties.Value.BlobSequenceNumber,
+                            resultMetadata,
+                            new BinaryDescribedSerialization(
+                                objectTypeRepresentation,
+                                this.DefaultSerializerRepresentation,
+                                destinationStream.ToArray()));
+                    }
+                });
+
+            return result;
         }
 
         /// <inheritdoc />
@@ -139,7 +155,6 @@ namespace Naos.Azure.Protocol.Blob.Client
                      .BeEqualTo(ExistingRecordStrategy.None, Invariant($"No support for {nameof(ExistingRecordStrategy)}."));
             operation.Payload.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.Payload)}"))
                      .BeAssignableToType<BinaryDescribedSerialization>(Invariant($"Only binary payloads supported."));
-            var containerClient = this.TryGetContainerClient(operation);
 
             var tags = operation
                       .Metadata
@@ -157,16 +172,23 @@ namespace Naos.Azure.Protocol.Blob.Client
 
             var binaryPayload = (BinaryDescribedSerialization)operation.Payload;
 
-            var blobClient = containerClient.GetBlobClient(operation.Metadata.StringSerializedId);
-            var blobUploadOptions = new BlobUploadOptions
-                                    {
-                                        Tags = tags,
-                                    };
+            PutRecordResult result = null;
+            this.RunContainerClientOperation(
+                operation,
+                containerClient =>
+                {
+                    var blobClient = containerClient.GetBlobClient(operation.Metadata.StringSerializedId);
+                    var blobUploadOptions = new BlobUploadOptions
+                                            {
+                                                Tags = tags,
+                                            };
 
-            var binaryData = new BinaryData(binaryPayload.SerializedPayload);
-            blobClient.Upload(binaryData, blobUploadOptions);
+                    var binaryData = new BinaryData(binaryPayload.SerializedPayload);
+                    var uploadResponse = blobClient.Upload(binaryData, blobUploadOptions);
 
-            var result = new PutRecordResult(-1);
+                    result = new PutRecordResult(uploadResponse.Value.BlobSequenceNumber);
+                });
+
             return result;
         }
 
@@ -214,8 +236,8 @@ namespace Naos.Azure.Protocol.Blob.Client
             operation.RecordFilter.DeprecatedIdTypes.MustForArg(
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.DeprecatedIdTypes)}"))
                      .BeNull();
-            operation.RecordFilter.IdTypes.Single().MustForArg(
-                          Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.IdTypes)}"))
+            operation.RecordFilter.IdTypes.Single()
+                     .MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.IdTypes)}"))
                      .BeEqualTo(identifierType);
             operation.RecordFilter.InternalRecordIds.MustForArg(
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.InternalRecordIds)}"))
@@ -230,12 +252,17 @@ namespace Naos.Azure.Protocol.Blob.Client
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Ids)}"))
                      .BeNull();
 
-            var containerClient = this.TryGetContainerClient(operation);
+            IReadOnlyCollection<StringSerializedIdentifier> result = new List<StringSerializedIdentifier>();
 
-            var blobs = containerClient.GetBlobs(BlobTraits.None, BlobStates.None);
-            var result = blobs
-                        .Select(_ => new StringSerializedIdentifier(_.Name, identifierType))
-                        .ToList();
+            this.RunContainerClientOperation(
+                operation,
+                containerClient =>
+                {
+                    var blobs = containerClient.GetBlobs(BlobTraits.None, BlobStates.None);
+                    result = blobs
+                            .Select(_ => new StringSerializedIdentifier(_.Name, identifierType))
+                            .ToList();
+                });
 
             return result;
         }
@@ -271,45 +298,40 @@ namespace Naos.Azure.Protocol.Blob.Client
         /// <inheritdoc />
         public override IStreamRepresentation StreamRepresentation => new StreamRepresentation(this.Name);
 
-        private BlobContainerClient TryGetContainerClient(
-            ISpecifyResourceLocator operation = null)
+        [SuppressMessage(
+            "Microsoft.Reliability",
+            "CA2000:Dispose objects before losing scope",
+            Justification = "Keeping for use on subsequent calls and disposed ")]
+        private void RunContainerClientOperation(
+            ISpecifyResourceLocator operation,
+            Action<BlobContainerClient> action)
         {
+            operation.MustForArg(nameof(operation)).NotBeNull();
+            action.MustForArg(nameof(action)).NotBeNull();
+
             var resourceLocator =
-                (ConnectionStringBlobContainerResourceLocator)(operation?.SpecifiedResourceLocator ?? this.ResourceLocatorProtocols.Execute(new GetAllResourceLocatorsOp()).Single());
+                (ConnectionStringBlobContainerResourceLocator)(operation?.SpecifiedResourceLocator
+                                                            ?? this.ResourceLocatorProtocols.Execute(new GetAllResourceLocatorsOp()).Single());
 
             // this is apparently the only way to set the timeout: https://github.com/Azure/azure-sdk-for-net/issues/9212
-            if (this.httpClient == null || this.httpClient.Timeout != resourceLocator.Timeout)
-            {
-                lock (this.httpClientLock)
-                {
-                    if (this.httpClient == null || this.httpClient.Timeout != resourceLocator.Timeout)
-                    {
-                        this.httpClient = new HttpClient
-                                          {
-                                              Timeout = resourceLocator.Timeout,
-                                          };
-                    }
-                }
-            }
-
-            var blobClientOptions = new BlobClientOptions
+            using (var httpClient = new HttpClient
                                     {
-                                        Transport = new HttpClientTransport(this.httpClient),
-                                        Retry =
+                                        Timeout = resourceLocator.Timeout,
+                                    })
+            {
+                var blobClientOptions = new BlobClientOptions
                                         {
-                                            NetworkTimeout = resourceLocator.Timeout,
-                                        },
-                                    };
+                                            Transport = new HttpClientTransport(httpClient),
+                                            Retry =
+                                            {
+                                                NetworkTimeout = resourceLocator.Timeout,
+                                            },
+                                        };
 
-            var serviceClient = new BlobServiceClient(resourceLocator.ConnectionString, blobClientOptions);
-            var containerClient = serviceClient.GetBlobContainerClient(resourceLocator.ContainerName);
-            return containerClient;
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            this.httpClient?.Dispose();
+                var serviceClient = new BlobServiceClient(resourceLocator.ConnectionString, blobClientOptions);
+                var containerClient = serviceClient.GetBlobContainerClient(resourceLocator.ContainerName);
+                action(containerClient);
+            }
         }
     }
 }
