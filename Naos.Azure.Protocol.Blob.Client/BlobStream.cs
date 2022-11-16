@@ -11,7 +11,9 @@ namespace Naos.Azure.Protocol.Blob.Client
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
+    using System.Net.Http;
     using System.Security.Cryptography;
+    using global::Azure.Core.Pipeline;
     using global::Azure.Storage;
     using global::Azure.Storage.Blobs;
     using global::Azure.Storage.Blobs.Models;
@@ -29,9 +31,13 @@ namespace Naos.Azure.Protocol.Blob.Client
     /// <summary>
     /// Thin Azure Blob implementation of <see cref="IStandardStream"/>.
     /// </summary>
+    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = NaosSuppressBecause.CA1506_AvoidExcessiveClassCoupling_DisagreeWithAssessment)]
     [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix", Justification = NaosSuppressBecause.CA1711_IdentifiersShouldNotHaveIncorrectSuffix_TypeNameAddedAsSuffixForTestsWhereTypeIsPrimaryConcern)]
-    public partial class BlobStream : StandardStreamBase
+    public partial class BlobStream : StandardStreamBase, IDisposable
     {
+        private readonly object httpClientLock = new object();
+        private HttpClient httpClient;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BlobStream"/> class.
         /// </summary>
@@ -270,9 +276,40 @@ namespace Naos.Azure.Protocol.Blob.Client
         {
             var resourceLocator =
                 (ConnectionStringBlobContainerResourceLocator)(operation?.SpecifiedResourceLocator ?? this.ResourceLocatorProtocols.Execute(new GetAllResourceLocatorsOp()).Single());
-            var serviceClient = new BlobServiceClient(resourceLocator.ConnectionString);
+
+            // this is apparently the only way to set the timeout: https://github.com/Azure/azure-sdk-for-net/issues/9212
+            if (this.httpClient == null || this.httpClient.Timeout != resourceLocator.Timeout)
+            {
+                lock (this.httpClientLock)
+                {
+                    if (this.httpClient == null || this.httpClient.Timeout != resourceLocator.Timeout)
+                    {
+                        this.httpClient = new HttpClient
+                                          {
+                                              Timeout = resourceLocator.Timeout,
+                                          };
+                    }
+                }
+            }
+
+            var blobClientOptions = new BlobClientOptions
+                                    {
+                                        Transport = new HttpClientTransport(this.httpClient),
+                                        Retry =
+                                        {
+                                            NetworkTimeout = resourceLocator.Timeout,
+                                        },
+                                    };
+
+            var serviceClient = new BlobServiceClient(resourceLocator.ConnectionString, blobClientOptions);
             var containerClient = serviceClient.GetBlobContainerClient(resourceLocator.ContainerName);
             return containerClient;
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            this.httpClient?.Dispose();
         }
     }
 }

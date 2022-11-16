@@ -20,6 +20,7 @@ namespace Naos.Azure.Domain.Test
 
     using global::OBeautifulCode.AutoFakeItEasy;
     using global::OBeautifulCode.Math.Recipes;
+    using global::OBeautifulCode.Serialization;
 
     /// <summary>
     /// The default (code generated) Dummy Factory.
@@ -39,7 +40,8 @@ namespace Naos.Azure.Domain.Test
             AutoFixtureBackedDummyFactory.AddDummyCreator(
                 () => new ConnectionStringBlobContainerResourceLocator(
                                  A.Dummy<string>(),
-                                 A.Dummy<string>()));
+                                 A.Dummy<string>(),
+                                 A.Dummy<TimeSpan>()));
         }
 
         /// <inheritdoc />

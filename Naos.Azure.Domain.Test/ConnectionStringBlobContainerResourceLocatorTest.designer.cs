@@ -49,7 +49,7 @@ namespace Naos.Azure.Domain.Test
                         var result = new SystemUnderTestExpectedStringRepresentation<ConnectionStringBlobContainerResourceLocator>
                         {
                             SystemUnderTest = systemUnderTest,
-                            ExpectedStringRepresentation = Invariant($"Naos.Azure.Domain.ConnectionStringBlobContainerResourceLocator: ContainerName = {systemUnderTest.ContainerName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, ConnectionString = {systemUnderTest.ConnectionString?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}."),
+                            ExpectedStringRepresentation = Invariant($"Naos.Azure.Domain.ConnectionStringBlobContainerResourceLocator: ContainerName = {systemUnderTest.ContainerName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, ConnectionString = {systemUnderTest.ConnectionString?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, Timeout = {systemUnderTest.Timeout.ToString() ?? "<null>"}."),
                         };
 
                         return result;
@@ -67,7 +67,8 @@ namespace Naos.Azure.Domain.Test
 
                         var result = new ConnectionStringBlobContainerResourceLocator(
                                              null,
-                                             referenceObject.ConnectionString);
+                                             referenceObject.ConnectionString,
+                                             referenceObject.Timeout);
 
                         return result;
                     },
@@ -84,7 +85,8 @@ namespace Naos.Azure.Domain.Test
 
                         var result = new ConnectionStringBlobContainerResourceLocator(
                                              Invariant($"  {Environment.NewLine}  "),
-                                             referenceObject.ConnectionString);
+                                             referenceObject.ConnectionString,
+                                             referenceObject.Timeout);
 
                         return result;
                     },
@@ -101,7 +103,8 @@ namespace Naos.Azure.Domain.Test
 
                         var result = new ConnectionStringBlobContainerResourceLocator(
                                              referenceObject.ContainerName,
-                                             null);
+                                             null,
+                                             referenceObject.Timeout);
 
                         return result;
                     },
@@ -118,7 +121,8 @@ namespace Naos.Azure.Domain.Test
 
                         var result = new ConnectionStringBlobContainerResourceLocator(
                                              referenceObject.ContainerName,
-                                             Invariant($"  {Environment.NewLine}  "));
+                                             Invariant($"  {Environment.NewLine}  "),
+                                             referenceObject.Timeout);
 
                         return result;
                     },
@@ -139,7 +143,8 @@ namespace Naos.Azure.Domain.Test
                         {
                             SystemUnderTest = new ConnectionStringBlobContainerResourceLocator(
                                                       referenceObject.ContainerName,
-                                                      referenceObject.ConnectionString),
+                                                      referenceObject.ConnectionString,
+                                                      referenceObject.Timeout),
                             ExpectedPropertyValue = referenceObject.ContainerName,
                         };
 
@@ -159,13 +164,35 @@ namespace Naos.Azure.Domain.Test
                         {
                             SystemUnderTest = new ConnectionStringBlobContainerResourceLocator(
                                                       referenceObject.ContainerName,
-                                                      referenceObject.ConnectionString),
+                                                      referenceObject.ConnectionString,
+                                                      referenceObject.Timeout),
                             ExpectedPropertyValue = referenceObject.ConnectionString,
                         };
 
                         return result;
                     },
                     PropertyName = "ConnectionString",
+                })
+            .AddScenario(() =>
+                new ConstructorPropertyAssignmentTestScenario<ConnectionStringBlobContainerResourceLocator>
+                {
+                    Name = "Timeout should return same 'timeout' parameter passed to constructor when getting",
+                    SystemUnderTestExpectedPropertyValueFunc = () =>
+                    {
+                        var referenceObject = A.Dummy<ConnectionStringBlobContainerResourceLocator>();
+
+                        var result = new SystemUnderTestExpectedPropertyValue<ConnectionStringBlobContainerResourceLocator>
+                        {
+                            SystemUnderTest = new ConnectionStringBlobContainerResourceLocator(
+                                                      referenceObject.ContainerName,
+                                                      referenceObject.ConnectionString,
+                                                      referenceObject.Timeout),
+                            ExpectedPropertyValue = referenceObject.Timeout,
+                        };
+
+                        return result;
+                    },
+                    PropertyName = "Timeout",
                 });
 
         private static readonly DeepCloneWithTestScenarios<ConnectionStringBlobContainerResourceLocator> DeepCloneWithTestScenarios = new DeepCloneWithTestScenarios<ConnectionStringBlobContainerResourceLocator>()
@@ -208,6 +235,26 @@ namespace Naos.Azure.Domain.Test
 
                         return result;
                     },
+                })
+            .AddScenario(() =>
+                new DeepCloneWithTestScenario<ConnectionStringBlobContainerResourceLocator>
+                {
+                    Name = "DeepCloneWithTimeout should deep clone object and replace Timeout with the provided timeout",
+                    WithPropertyName = "Timeout",
+                    SystemUnderTestDeepCloneWithValueFunc = () =>
+                    {
+                        var systemUnderTest = A.Dummy<ConnectionStringBlobContainerResourceLocator>();
+
+                        var referenceObject = A.Dummy<ConnectionStringBlobContainerResourceLocator>().ThatIs(_ => !systemUnderTest.Timeout.IsEqualTo(_.Timeout));
+
+                        var result = new SystemUnderTestDeepCloneWithValue<ConnectionStringBlobContainerResourceLocator>
+                        {
+                            SystemUnderTest = systemUnderTest,
+                            DeepCloneWithValue = referenceObject.Timeout,
+                        };
+
+                        return result;
+                    },
                 });
 
         private static readonly ConnectionStringBlobContainerResourceLocator ReferenceObjectForEquatableTestScenarios = A.Dummy<ConnectionStringBlobContainerResourceLocator>();
@@ -222,16 +269,23 @@ namespace Naos.Azure.Domain.Test
                     {
                         new ConnectionStringBlobContainerResourceLocator(
                                 ReferenceObjectForEquatableTestScenarios.ContainerName,
-                                ReferenceObjectForEquatableTestScenarios.ConnectionString),
+                                ReferenceObjectForEquatableTestScenarios.ConnectionString,
+                                ReferenceObjectForEquatableTestScenarios.Timeout),
                     },
                     ObjectsThatAreNotEqualToReferenceObject = new ConnectionStringBlobContainerResourceLocator[]
                     {
                         new ConnectionStringBlobContainerResourceLocator(
                                 A.Dummy<ConnectionStringBlobContainerResourceLocator>().Whose(_ => !_.ContainerName.IsEqualTo(ReferenceObjectForEquatableTestScenarios.ContainerName)).ContainerName,
-                                ReferenceObjectForEquatableTestScenarios.ConnectionString),
+                                ReferenceObjectForEquatableTestScenarios.ConnectionString,
+                                ReferenceObjectForEquatableTestScenarios.Timeout),
                         new ConnectionStringBlobContainerResourceLocator(
                                 ReferenceObjectForEquatableTestScenarios.ContainerName,
-                                A.Dummy<ConnectionStringBlobContainerResourceLocator>().Whose(_ => !_.ConnectionString.IsEqualTo(ReferenceObjectForEquatableTestScenarios.ConnectionString)).ConnectionString),
+                                A.Dummy<ConnectionStringBlobContainerResourceLocator>().Whose(_ => !_.ConnectionString.IsEqualTo(ReferenceObjectForEquatableTestScenarios.ConnectionString)).ConnectionString,
+                                ReferenceObjectForEquatableTestScenarios.Timeout),
+                        new ConnectionStringBlobContainerResourceLocator(
+                                ReferenceObjectForEquatableTestScenarios.ContainerName,
+                                ReferenceObjectForEquatableTestScenarios.ConnectionString,
+                                A.Dummy<ConnectionStringBlobContainerResourceLocator>().Whose(_ => !_.Timeout.IsEqualTo(ReferenceObjectForEquatableTestScenarios.Timeout)).Timeout),
                     },
                     ObjectsThatAreNotOfTheSameTypeAsReferenceObject = new object[]
                     {
@@ -530,7 +584,7 @@ namespace Naos.Azure.Domain.Test
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
             public static void DeepCloneWith___Should_deep_clone_object_and_replace_the_associated_property_with_the_provided_value___When_called()
             {
-                var propertyNames = new string[] { "ContainerName", "ConnectionString" };
+                var propertyNames = new string[] { "ContainerName", "ConnectionString", "Timeout" };
 
                 var scenarios = DeepCloneWithTestScenarios.ValidateAndPrepareForTesting();
 

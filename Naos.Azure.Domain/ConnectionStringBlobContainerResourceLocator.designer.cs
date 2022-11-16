@@ -72,7 +72,8 @@ namespace Naos.Azure.Domain
             }
 
             var result = this.ContainerName.IsEqualTo(other.ContainerName, StringComparer.Ordinal)
-                      && this.ConnectionString.IsEqualTo(other.ConnectionString, StringComparer.Ordinal);
+                      && this.ConnectionString.IsEqualTo(other.ConnectionString, StringComparer.Ordinal)
+                      && this.Timeout.IsEqualTo(other.Timeout);
 
             return result;
         }
@@ -84,6 +85,7 @@ namespace Naos.Azure.Domain
         public override int GetHashCode() => HashCodeHelper.Initialize()
             .Hash(this.ContainerName)
             .Hash(this.ConnectionString)
+            .Hash(this.Timeout)
             .Value;
 
         /// <inheritdoc />
@@ -115,7 +117,8 @@ namespace Naos.Azure.Domain
         {
             var result = new ConnectionStringBlobContainerResourceLocator(
                                  containerName,
-                                 this.ConnectionString?.DeepClone());
+                                 this.ConnectionString?.DeepClone(),
+                                 this.Timeout.DeepClone());
 
             return result;
         }
@@ -146,7 +149,40 @@ namespace Naos.Azure.Domain
         {
             var result = new ConnectionStringBlobContainerResourceLocator(
                                  this.ContainerName?.DeepClone(),
-                                 connectionString);
+                                 connectionString,
+                                 this.Timeout.DeepClone());
+
+            return result;
+        }
+
+        /// <summary>
+        /// Deep clones this object with a new <see cref="Timeout" />.
+        /// </summary>
+        /// <param name="timeout">The new <see cref="Timeout" />.  This object will NOT be deep cloned; it is used as-is.</param>
+        /// <returns>New <see cref="ConnectionStringBlobContainerResourceLocator" /> using the specified <paramref name="timeout" /> for <see cref="Timeout" /> and a deep clone of every other property.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
+        [SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings")]
+        [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+        [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+        [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+        [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+        [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+        [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+        [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+        [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+        [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+        [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        public ConnectionStringBlobContainerResourceLocator DeepCloneWithTimeout(TimeSpan timeout)
+        {
+            var result = new ConnectionStringBlobContainerResourceLocator(
+                                 this.ContainerName?.DeepClone(),
+                                 this.ConnectionString?.DeepClone(),
+                                 timeout);
 
             return result;
         }
@@ -157,7 +193,8 @@ namespace Naos.Azure.Domain
         {
             var result = new ConnectionStringBlobContainerResourceLocator(
                                  this.ContainerName?.DeepClone(),
-                                 this.ConnectionString?.DeepClone());
+                                 this.ConnectionString?.DeepClone(),
+                                 this.Timeout.DeepClone());
 
             return result;
         }
@@ -166,7 +203,7 @@ namespace Naos.Azure.Domain
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public override string ToString()
         {
-            var result = Invariant($"Naos.Azure.Domain.ConnectionStringBlobContainerResourceLocator: ContainerName = {this.ContainerName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, ConnectionString = {this.ConnectionString?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}.");
+            var result = Invariant($"Naos.Azure.Domain.ConnectionStringBlobContainerResourceLocator: ContainerName = {this.ContainerName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, ConnectionString = {this.ConnectionString?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, Timeout = {this.Timeout.ToString() ?? "<null>"}.");
 
             return result;
         }

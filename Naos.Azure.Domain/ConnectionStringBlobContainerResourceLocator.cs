@@ -21,15 +21,18 @@ namespace Naos.Azure.Domain
         /// </summary>
         /// <param name="containerName">The container name.</param>
         /// <param name="connectionString">The connection string.</param>
+        /// <param name="timeout">The timeout.</param>
         public ConnectionStringBlobContainerResourceLocator(
             string containerName,
-            string connectionString)
+            string connectionString,
+            TimeSpan timeout)
         {
             containerName.MustForArg(nameof(containerName)).NotBeNullNorWhiteSpace();
             connectionString.MustForArg(nameof(connectionString)).NotBeNullNorWhiteSpace();
 
             this.ContainerName = containerName;
             this.ConnectionString = connectionString;
+            this.Timeout = timeout;
         }
 
         /// <summary>
@@ -41,5 +44,10 @@ namespace Naos.Azure.Domain
         /// Gets the connection string.
         /// </summary>
         public string ConnectionString { get; private set; }
+
+        /// <summary>
+        /// Gets the timeout.
+        /// </summary>
+        public TimeSpan Timeout { get; private set; }
     }
 }
