@@ -31,14 +31,14 @@ namespace Naos.Azure.Protocol.Blob.Client.Test
                 new ObcSimplifyingSerializerFactory(new JsonSerializerFactory()),
                 new SerializerRepresentation(SerializationKind.Json),
                 SerializationFormat.Binary,
-                new SingleResourceLocatorProtocols(new ConnectionStringBlobContainerResourceLocator(containerName, connectionString)));
+                new SingleResourceLocatorProtocols(new ConnectionStringBlobContainerResourceLocator(containerName, connectionString, TimeSpan.FromSeconds(150))));
 
             var writeStream = new BlobStream(
                 "Testing",
                 new ObcSimplifyingSerializerFactory(new JsonSerializerFactory()),
                 new SerializerRepresentation(SerializationKind.Json),
                 SerializationFormat.Binary,
-                new SingleResourceLocatorProtocols(new ConnectionStringBlobContainerResourceLocator(containerName, connectionString)));
+                new SingleResourceLocatorProtocols(new ConnectionStringBlobContainerResourceLocator(containerName, connectionString, TimeSpan.FromSeconds(150))));
 
             var bytes = A.Dummy<byte[]>();
             var id = Guid.NewGuid().ToString();
