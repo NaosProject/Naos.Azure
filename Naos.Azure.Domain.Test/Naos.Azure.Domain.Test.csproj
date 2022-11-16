@@ -261,6 +261,10 @@
     <Compile Include=".recipes\OBeautifulCode.Type\TypeDummyFactory.cs" />
     <Compile Include=".recipes\OBeautifulCode.Type\TypeDummyFactory.designer.cs" />
     <Compile Include=".recipes\OBeautifulCode.Type\TypeExtensions.cs" />
+    <Compile Include="AzureBlobStreamConfigTest.cs" />
+    <Compile Include="AzureBlobStreamConfigTest.designer.cs">
+      <DependentUpon>AzureBlobStreamConfigTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="AzureDummyFactoryTest.designer.cs">
       <DependentUpon>AzureDummyFactoryTest.cs</DependentUpon>
     </Compile>

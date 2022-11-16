@@ -38,6 +38,14 @@ namespace Naos.Azure.Domain.Test
         public DefaultAzureDummyFactory()
         {
             AutoFixtureBackedDummyFactory.AddDummyCreator(
+                () => new AzureBlobStreamConfig(
+                                 A.Dummy<string>(),
+                                 A.Dummy<StreamAccessKinds>(),
+                                 A.Dummy<SerializerRepresentation>(),
+                                 A.Dummy<SerializationFormat>(),
+                                 A.Dummy<IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>>()));
+
+            AutoFixtureBackedDummyFactory.AddDummyCreator(
                 () => new ConnectionStringBlobContainerResourceLocator(
                                  A.Dummy<string>(),
                                  A.Dummy<string>(),
