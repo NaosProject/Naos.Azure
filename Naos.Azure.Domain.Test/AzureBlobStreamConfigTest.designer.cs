@@ -70,7 +70,7 @@ namespace Naos.Azure.Domain.Test
                                              referenceObject.AccessKinds,
                                              referenceObject.DefaultSerializerRepresentation,
                                              referenceObject.DefaultSerializationFormat,
-                                             referenceObject.AllLocators);
+                                             (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)referenceObject.AllLocators);
 
                         return result;
                     },
@@ -90,7 +90,7 @@ namespace Naos.Azure.Domain.Test
                                              referenceObject.AccessKinds,
                                              referenceObject.DefaultSerializerRepresentation,
                                              referenceObject.DefaultSerializationFormat,
-                                             referenceObject.AllLocators);
+                                             (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)referenceObject.AllLocators);
 
                         return result;
                     },
@@ -110,7 +110,7 @@ namespace Naos.Azure.Domain.Test
                                              referenceObject.AccessKinds,
                                              null,
                                              referenceObject.DefaultSerializationFormat,
-                                             referenceObject.AllLocators);
+                                             (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)referenceObject.AllLocators);
 
                         return result;
                     },
@@ -170,7 +170,7 @@ namespace Naos.Azure.Domain.Test
                                              referenceObject.AccessKinds,
                                              referenceObject.DefaultSerializerRepresentation,
                                              referenceObject.DefaultSerializationFormat,
-                                             new ConnectionStringBlobContainerResourceLocator[0].Concat(referenceObject.AllLocators).Concat(new ConnectionStringBlobContainerResourceLocator[] { null }).Concat(referenceObject.AllLocators).ToList());
+                                             new ConnectionStringBlobContainerResourceLocator[0].Concat((IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)referenceObject.AllLocators).Concat(new ConnectionStringBlobContainerResourceLocator[] { null }).Concat((IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)referenceObject.AllLocators).ToList());
 
                         return result;
                     },
@@ -194,7 +194,7 @@ namespace Naos.Azure.Domain.Test
                                                       referenceObject.AccessKinds,
                                                       referenceObject.DefaultSerializerRepresentation,
                                                       referenceObject.DefaultSerializationFormat,
-                                                      referenceObject.AllLocators),
+                                                      (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)referenceObject.AllLocators),
                             ExpectedPropertyValue = referenceObject.Name,
                         };
 
@@ -217,7 +217,7 @@ namespace Naos.Azure.Domain.Test
                                                       referenceObject.AccessKinds,
                                                       referenceObject.DefaultSerializerRepresentation,
                                                       referenceObject.DefaultSerializationFormat,
-                                                      referenceObject.AllLocators),
+                                                      (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)referenceObject.AllLocators),
                             ExpectedPropertyValue = referenceObject.AccessKinds,
                         };
 
@@ -240,7 +240,7 @@ namespace Naos.Azure.Domain.Test
                                                       referenceObject.AccessKinds,
                                                       referenceObject.DefaultSerializerRepresentation,
                                                       referenceObject.DefaultSerializationFormat,
-                                                      referenceObject.AllLocators),
+                                                      (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)referenceObject.AllLocators),
                             ExpectedPropertyValue = referenceObject.DefaultSerializerRepresentation,
                         };
 
@@ -263,7 +263,7 @@ namespace Naos.Azure.Domain.Test
                                                       referenceObject.AccessKinds,
                                                       referenceObject.DefaultSerializerRepresentation,
                                                       referenceObject.DefaultSerializationFormat,
-                                                      referenceObject.AllLocators),
+                                                      (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)referenceObject.AllLocators),
                             ExpectedPropertyValue = referenceObject.DefaultSerializationFormat,
                         };
 
@@ -286,7 +286,7 @@ namespace Naos.Azure.Domain.Test
                                                       referenceObject.AccessKinds,
                                                       referenceObject.DefaultSerializerRepresentation,
                                                       referenceObject.DefaultSerializationFormat,
-                                                      referenceObject.AllLocators),
+                                                      (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)referenceObject.AllLocators),
                             ExpectedPropertyValue = referenceObject.AllLocators,
                         };
 
@@ -412,7 +412,7 @@ namespace Naos.Azure.Domain.Test
                                 ReferenceObjectForEquatableTestScenarios.AccessKinds,
                                 ReferenceObjectForEquatableTestScenarios.DefaultSerializerRepresentation,
                                 ReferenceObjectForEquatableTestScenarios.DefaultSerializationFormat,
-                                ReferenceObjectForEquatableTestScenarios.AllLocators),
+                                (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)ReferenceObjectForEquatableTestScenarios.AllLocators),
                     },
                     ObjectsThatAreNotEqualToReferenceObject = new AzureBlobStreamConfig[]
                     {
@@ -421,31 +421,31 @@ namespace Naos.Azure.Domain.Test
                                 ReferenceObjectForEquatableTestScenarios.AccessKinds,
                                 ReferenceObjectForEquatableTestScenarios.DefaultSerializerRepresentation,
                                 ReferenceObjectForEquatableTestScenarios.DefaultSerializationFormat,
-                                ReferenceObjectForEquatableTestScenarios.AllLocators),
+                                (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)ReferenceObjectForEquatableTestScenarios.AllLocators),
                         new AzureBlobStreamConfig(
                                 ReferenceObjectForEquatableTestScenarios.Name,
                                 A.Dummy<AzureBlobStreamConfig>().Whose(_ => !_.AccessKinds.IsEqualTo(ReferenceObjectForEquatableTestScenarios.AccessKinds)).AccessKinds,
                                 ReferenceObjectForEquatableTestScenarios.DefaultSerializerRepresentation,
                                 ReferenceObjectForEquatableTestScenarios.DefaultSerializationFormat,
-                                ReferenceObjectForEquatableTestScenarios.AllLocators),
+                                (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)ReferenceObjectForEquatableTestScenarios.AllLocators),
                         new AzureBlobStreamConfig(
                                 ReferenceObjectForEquatableTestScenarios.Name,
                                 ReferenceObjectForEquatableTestScenarios.AccessKinds,
                                 A.Dummy<AzureBlobStreamConfig>().Whose(_ => !_.DefaultSerializerRepresentation.IsEqualTo(ReferenceObjectForEquatableTestScenarios.DefaultSerializerRepresentation)).DefaultSerializerRepresentation,
                                 ReferenceObjectForEquatableTestScenarios.DefaultSerializationFormat,
-                                ReferenceObjectForEquatableTestScenarios.AllLocators),
+                                (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)ReferenceObjectForEquatableTestScenarios.AllLocators),
                         new AzureBlobStreamConfig(
                                 ReferenceObjectForEquatableTestScenarios.Name,
                                 ReferenceObjectForEquatableTestScenarios.AccessKinds,
                                 ReferenceObjectForEquatableTestScenarios.DefaultSerializerRepresentation,
                                 A.Dummy<AzureBlobStreamConfig>().Whose(_ => !_.DefaultSerializationFormat.IsEqualTo(ReferenceObjectForEquatableTestScenarios.DefaultSerializationFormat)).DefaultSerializationFormat,
-                                ReferenceObjectForEquatableTestScenarios.AllLocators),
+                                (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)ReferenceObjectForEquatableTestScenarios.AllLocators),
                         new AzureBlobStreamConfig(
                                 ReferenceObjectForEquatableTestScenarios.Name,
                                 ReferenceObjectForEquatableTestScenarios.AccessKinds,
                                 ReferenceObjectForEquatableTestScenarios.DefaultSerializerRepresentation,
                                 ReferenceObjectForEquatableTestScenarios.DefaultSerializationFormat,
-                                A.Dummy<AzureBlobStreamConfig>().Whose(_ => !_.AllLocators.IsEqualTo(ReferenceObjectForEquatableTestScenarios.AllLocators)).AllLocators),
+                                (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)A.Dummy<AzureBlobStreamConfig>().Whose(_ => !_.AllLocators.IsEqualTo(ReferenceObjectForEquatableTestScenarios.AllLocators)).AllLocators),
                     },
                     ObjectsThatAreNotOfTheSameTypeAsReferenceObject = new object[]
                     {
@@ -1309,6 +1309,149 @@ namespace Naos.Azure.Domain.Test
                     // Assert
                     actuals1.AsTest().Must().Each().BeFalse(because: scenario.Id);
                     actuals2.AsTest().Must().Each().BeFalse(because: scenario.Id);
+                }
+            }
+
+            [Fact]
+            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+            public static void Equals_with_StreamConfigBase___Should_return_false___When_parameter_other_is_null()
+            {
+                var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
+
+                foreach (var scenario in scenarios)
+                {
+                    // Arrange
+                    StreamConfigBase systemUnderTest = null;
+
+                    // Act
+                    var actual = scenario.ReferenceObject.Equals((StreamConfigBase)systemUnderTest);
+
+                    // Assert
+                    actual.AsTest().Must().BeFalse(because: scenario.Id);
+                }
+            }
+
+            [Fact]
+            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+            public static void Equals_with_StreamConfigBase___Should_return_true___When_parameter_other_is_same_object()
+            {
+                var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
+
+                foreach (var scenario in scenarios)
+                {
+                    // Arrange, Act
+                    var actual = scenario.ReferenceObject.Equals((StreamConfigBase)scenario.ReferenceObject);
+
+                    // Assert
+                    actual.AsTest().Must().BeTrue(because: scenario.Id);
+                }
+            }
+
+            [Fact]
+            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+            public static void Equals_with_StreamConfigBase___Should_return_false___When_parameter_other_is_derived_from_the_same_type_but_is_not_of_the_same_type_as_this_object()
+            {
+                var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
+
+                foreach (var scenario in scenarios)
+                {
+                    // Arrange, Act
+                    var actuals = scenario.ObjectsThatDeriveFromScenarioTypeButAreNotOfTheSameTypeAsReferenceObject.Select(_ => scenario.ReferenceObject.Equals((StreamConfigBase)_)).ToList();
+
+                    // Assert
+                    actuals.AsTest().Must().Each().BeFalse(because: scenario.Id);
+                }
+            }
+
+            [Fact]
+            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+            public static void Equals_with_StreamConfigBase___Should_return_false___When_objects_being_compared_have_different_property_values()
+            {
+                var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
+
+                foreach (var scenario in scenarios)
+                {
+                    // Arrange, Act
+                    var actuals = scenario.ObjectsThatAreNotEqualToReferenceObject.Select(_ => scenario.ReferenceObject.Equals((StreamConfigBase)_)).ToList();
+
+                    // Assert
+                    actuals.AsTest().Must().Each().BeFalse(because: scenario.Id);
+                }
+            }
+
+            [Fact]
+            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+            public static void Equals_with_StreamConfigBase___Should_return_true___When_objects_being_compared_have_same_property_values()
+            {
+                var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
+
+                foreach (var scenario in scenarios)
+                {
+                    // Arrange, Act
+                    var actuals = scenario.ObjectsThatAreEqualToButNotTheSameAsReferenceObject.Select(_ => scenario.ReferenceObject.Equals((StreamConfigBase)_)).ToList();
+
+                    // Assert
+                    actuals.AsTest().Must().Each().BeTrue(because: scenario.Id);
                 }
             }
 

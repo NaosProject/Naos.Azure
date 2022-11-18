@@ -18,7 +18,7 @@ namespace Naos.Azure.Domain
     /// <summary>
     /// Config object to contain necessary information to inflate an AzureBlobStream.
     /// </summary>
-    public partial class AzureBlobStreamConfig : IModelViaCodeGen
+    public partial class AzureBlobStreamConfig : StreamConfigBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureBlobStreamConfig"/> class.
@@ -34,43 +34,8 @@ namespace Naos.Azure.Domain
             SerializerRepresentation defaultSerializerRepresentation,
             SerializationFormat defaultSerializationFormat,
             IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator> allLocators)
+            : base(name, accessKinds, defaultSerializerRepresentation, defaultSerializationFormat, allLocators)
         {
-            name.MustForArg(nameof(name)).NotBeNullNorWhiteSpace();
-            accessKinds.MustForArg(nameof(accessKinds)).NotBeEqualTo(StreamAccessKinds.None);
-            defaultSerializerRepresentation.MustForArg(nameof(defaultSerializerRepresentation)).NotBeNull();
-            defaultSerializationFormat.MustForArg(nameof(defaultSerializationFormat)).NotBeEqualTo(SerializationFormat.Invalid);
-            allLocators.MustForArg(nameof(allLocators)).NotBeNullNorEmptyEnumerableNorContainAnyNulls();
-
-            this.Name = name;
-            this.AccessKinds = accessKinds;
-            this.DefaultSerializerRepresentation = defaultSerializerRepresentation;
-            this.DefaultSerializationFormat = defaultSerializationFormat;
-            this.AllLocators = allLocators;
         }
-
-        /// <summary>
-        /// Gets the name.
-        /// </summary>
-        public string Name { get; private set; }
-
-        /// <summary>
-        /// Gets the access the stream has.
-        /// </summary>
-        public StreamAccessKinds AccessKinds { get; private set; }
-
-        /// <summary>
-        /// Gets the default <see cref="SerializerRepresentation"/> (used for identifier serialization).
-        /// </summary>
-        public SerializerRepresentation DefaultSerializerRepresentation { get; private set; }
-
-        /// <summary>
-        /// Gets the default <see cref="SerializationFormat"/>.
-        /// </summary>
-        public SerializationFormat DefaultSerializationFormat { get; private set; }
-
-        /// <summary>
-        /// Gets all <see cref="ConnectionStringBlobContainerResourceLocator"/>'s.
-        /// </summary>
-        public IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator> AllLocators { get; private set; }
     }
 }

@@ -94,26 +94,9 @@ namespace Naos.Azure.Domain
             .Value;
 
         /// <inheritdoc />
-        public object Clone() => this.DeepClone();
+        public new AzureBlobStreamConfig DeepClone() => (AzureBlobStreamConfig)this.DeepCloneInternal();
 
         /// <inheritdoc />
-        public AzureBlobStreamConfig DeepClone()
-        {
-            var result = new AzureBlobStreamConfig(
-                                 this.Name?.DeepClone(),
-                                 this.AccessKinds.DeepClone(),
-                                 this.DefaultSerializerRepresentation?.DeepClone(),
-                                 this.DefaultSerializationFormat.DeepClone(),
-                                 this.AllLocators?.DeepClone());
-
-            return result;
-        }
-
-        /// <summary>
-        /// Deep clones this object with a new <see cref="Name" />.
-        /// </summary>
-        /// <param name="name">The new <see cref="Name" />.  This object will NOT be deep cloned; it is used as-is.</param>
-        /// <returns>New <see cref="AzureBlobStreamConfig" /> using the specified <paramref name="name" /> for <see cref="Name" /> and a deep clone of every other property.</returns>
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         [SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings")]
@@ -131,23 +114,19 @@ namespace Naos.Azure.Domain
         [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        public AzureBlobStreamConfig DeepCloneWithName(string name)
+        public override StreamConfigBase DeepCloneWithName(string name)
         {
             var result = new AzureBlobStreamConfig(
                                  name,
                                  this.AccessKinds.DeepClone(),
                                  this.DefaultSerializerRepresentation?.DeepClone(),
                                  this.DefaultSerializationFormat.DeepClone(),
-                                 this.AllLocators?.DeepClone());
+                                 (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)this.AllLocators?.DeepClone());
 
             return result;
         }
 
-        /// <summary>
-        /// Deep clones this object with a new <see cref="AccessKinds" />.
-        /// </summary>
-        /// <param name="accessKinds">The new <see cref="AccessKinds" />.  This object will NOT be deep cloned; it is used as-is.</param>
-        /// <returns>New <see cref="AzureBlobStreamConfig" /> using the specified <paramref name="accessKinds" /> for <see cref="AccessKinds" /> and a deep clone of every other property.</returns>
+        /// <inheritdoc />
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         [SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings")]
@@ -165,23 +144,19 @@ namespace Naos.Azure.Domain
         [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        public AzureBlobStreamConfig DeepCloneWithAccessKinds(StreamAccessKinds accessKinds)
+        public override StreamConfigBase DeepCloneWithAccessKinds(StreamAccessKinds accessKinds)
         {
             var result = new AzureBlobStreamConfig(
                                  this.Name?.DeepClone(),
                                  accessKinds,
                                  this.DefaultSerializerRepresentation?.DeepClone(),
                                  this.DefaultSerializationFormat.DeepClone(),
-                                 this.AllLocators?.DeepClone());
+                                 (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)this.AllLocators?.DeepClone());
 
             return result;
         }
 
-        /// <summary>
-        /// Deep clones this object with a new <see cref="DefaultSerializerRepresentation" />.
-        /// </summary>
-        /// <param name="defaultSerializerRepresentation">The new <see cref="DefaultSerializerRepresentation" />.  This object will NOT be deep cloned; it is used as-is.</param>
-        /// <returns>New <see cref="AzureBlobStreamConfig" /> using the specified <paramref name="defaultSerializerRepresentation" /> for <see cref="DefaultSerializerRepresentation" /> and a deep clone of every other property.</returns>
+        /// <inheritdoc />
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         [SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings")]
@@ -199,23 +174,19 @@ namespace Naos.Azure.Domain
         [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        public AzureBlobStreamConfig DeepCloneWithDefaultSerializerRepresentation(SerializerRepresentation defaultSerializerRepresentation)
+        public override StreamConfigBase DeepCloneWithDefaultSerializerRepresentation(SerializerRepresentation defaultSerializerRepresentation)
         {
             var result = new AzureBlobStreamConfig(
                                  this.Name?.DeepClone(),
                                  this.AccessKinds.DeepClone(),
                                  defaultSerializerRepresentation,
                                  this.DefaultSerializationFormat.DeepClone(),
-                                 this.AllLocators?.DeepClone());
+                                 (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)this.AllLocators?.DeepClone());
 
             return result;
         }
 
-        /// <summary>
-        /// Deep clones this object with a new <see cref="DefaultSerializationFormat" />.
-        /// </summary>
-        /// <param name="defaultSerializationFormat">The new <see cref="DefaultSerializationFormat" />.  This object will NOT be deep cloned; it is used as-is.</param>
-        /// <returns>New <see cref="AzureBlobStreamConfig" /> using the specified <paramref name="defaultSerializationFormat" /> for <see cref="DefaultSerializationFormat" /> and a deep clone of every other property.</returns>
+        /// <inheritdoc />
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         [SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings")]
@@ -233,23 +204,19 @@ namespace Naos.Azure.Domain
         [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        public AzureBlobStreamConfig DeepCloneWithDefaultSerializationFormat(SerializationFormat defaultSerializationFormat)
+        public override StreamConfigBase DeepCloneWithDefaultSerializationFormat(SerializationFormat defaultSerializationFormat)
         {
             var result = new AzureBlobStreamConfig(
                                  this.Name?.DeepClone(),
                                  this.AccessKinds.DeepClone(),
                                  this.DefaultSerializerRepresentation?.DeepClone(),
                                  defaultSerializationFormat,
-                                 this.AllLocators?.DeepClone());
+                                 (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)this.AllLocators?.DeepClone());
 
             return result;
         }
 
-        /// <summary>
-        /// Deep clones this object with a new <see cref="AllLocators" />.
-        /// </summary>
-        /// <param name="allLocators">The new <see cref="AllLocators" />.  This object will NOT be deep cloned; it is used as-is.</param>
-        /// <returns>New <see cref="AzureBlobStreamConfig" /> using the specified <paramref name="allLocators" /> for <see cref="AllLocators" /> and a deep clone of every other property.</returns>
+        /// <inheritdoc />
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         [SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings")]
@@ -267,14 +234,28 @@ namespace Naos.Azure.Domain
         [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        public AzureBlobStreamConfig DeepCloneWithAllLocators(IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator> allLocators)
+        public override StreamConfigBase DeepCloneWithAllLocators(IReadOnlyCollection<IResourceLocator> allLocators)
         {
             var result = new AzureBlobStreamConfig(
                                  this.Name?.DeepClone(),
                                  this.AccessKinds.DeepClone(),
                                  this.DefaultSerializerRepresentation?.DeepClone(),
                                  this.DefaultSerializationFormat.DeepClone(),
-                                 allLocators);
+                                 (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)allLocators);
+
+            return result;
+        }
+
+        /// <inheritdoc />
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
+        protected override StreamConfigBase DeepCloneInternal()
+        {
+            var result = new AzureBlobStreamConfig(
+                                 this.Name?.DeepClone(),
+                                 this.AccessKinds.DeepClone(),
+                                 this.DefaultSerializerRepresentation?.DeepClone(),
+                                 this.DefaultSerializationFormat.DeepClone(),
+                                 (IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator>)this.AllLocators?.DeepClone());
 
             return result;
         }
