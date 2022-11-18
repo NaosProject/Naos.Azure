@@ -8,6 +8,7 @@ namespace Naos.Azure.Domain
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Naos.Database.Domain;
     using OBeautifulCode.Assertion.Recipes;
     using OBeautifulCode.Serialization;
@@ -36,6 +37,7 @@ namespace Naos.Azure.Domain
             IReadOnlyCollection<ConnectionStringBlobContainerResourceLocator> allLocators)
             : base(name, accessKinds, defaultSerializerRepresentation, defaultSerializationFormat, allLocators)
         {
+            allLocators.ToList().ForEach(_ => _.MustForArg(nameof(allLocators) + "-item").BeOfType<ConnectionStringBlobContainerResourceLocator>());
         }
     }
 }
