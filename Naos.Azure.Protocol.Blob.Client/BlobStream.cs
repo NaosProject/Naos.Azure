@@ -11,6 +11,7 @@ namespace Naos.Azure.Protocol.Blob.Client
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
+    using System.Net;
     using System.Net.Http;
     using System.Security.Cryptography;
     using global::Azure.Core.Pipeline;
@@ -118,22 +119,37 @@ namespace Naos.Azure.Protocol.Blob.Client
                     using (var destinationStream = new MemoryStream())
                     {
                         var downloadResponse = blobClient.DownloadTo(destinationStream);
-                        downloadResponse.IsError.MustForOp("Error in response").BeFalse(downloadResponse.ReasonPhrase);
-                        var resultMetadata = new StreamRecordMetadata(
-                            id,
-                            this.DefaultSerializerRepresentation,
-                            identifierTypeRepresentation.ToWithAndWithoutVersion(),
-                            objectTypeRepresentation.ToWithAndWithoutVersion(),
-                            new NamedValue<string>[0],
-                            DateTime.UtcNow,
-                            null);
-                        result = new StreamRecord(
-                            blobProperties.Value.BlobSequenceNumber,
-                            resultMetadata,
-                            new BinaryDescribedSerialization(
-                                objectTypeRepresentation,
+                        if (downloadResponse.Status == (int)HttpStatusCode.NotFound)
+                        {
+                            result = null;
+                        }
+                        else if (downloadResponse.Status == (int)HttpStatusCode.OK
+                              || downloadResponse.Status == (int)HttpStatusCode.PartialContent)
+                        {
+                            // for very small files on this version of the SDK the returned status will be 206 (PartialContent)
+                            //     because the download is using range bytes and if they all fit in the first range call then
+                            //     206 is returned even though it's complete: https://github.com/Azure/azure-sdk-for-net/issues/17945
+                            var resultMetadata = new StreamRecordMetadata(
+                                id,
                                 this.DefaultSerializerRepresentation,
-                                destinationStream.ToArray()));
+                                identifierTypeRepresentation.ToWithAndWithoutVersion(),
+                                objectTypeRepresentation.ToWithAndWithoutVersion(),
+                                new NamedValue<string>[0],
+                                DateTime.UtcNow,
+                                null);
+
+                            result = new StreamRecord(
+                                blobProperties.Value.BlobSequenceNumber,
+                                resultMetadata,
+                                new BinaryDescribedSerialization(
+                                    objectTypeRepresentation,
+                                    this.DefaultSerializerRepresentation,
+                                    destinationStream.ToArray()));
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException(Invariant($"Error download blob: {downloadResponse.ReasonPhrase}."));
+                        }
                     }
                 });
 
