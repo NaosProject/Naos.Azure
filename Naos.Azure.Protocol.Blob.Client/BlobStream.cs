@@ -12,12 +12,10 @@ namespace Naos.Azure.Protocol.Blob.Client
     using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Net.Http;
     using System.Security.Cryptography;
-    using global::Azure.Core.Pipeline;
-    using global::Azure.Storage;
-    using global::Azure.Storage.Blobs;
-    using global::Azure.Storage.Blobs.Models;
+    using global::Microsoft.Azure.Storage.Blob.Protocol;
+    using Microsoft.Azure.Storage;
+    using Microsoft.Azure.Storage.Blob;
     using Naos.Azure.Domain;
     using Naos.CodeAnalysis.Recipes;
     using Naos.Database.Domain;
@@ -114,43 +112,28 @@ namespace Naos.Azure.Protocol.Blob.Client
                 operation,
                 containerClient =>
                 {
-                    var blobClient = containerClient.GetBlobClient(id);
-                    var blobProperties = blobClient.GetProperties();
-                    using (var destinationStream = new MemoryStream())
-                    {
-                        var downloadResponse = blobClient.DownloadTo(destinationStream);
-                        if (downloadResponse.Status == (int)HttpStatusCode.NotFound)
-                        {
-                            result = null;
-                        }
-                        else if (downloadResponse.Status == (int)HttpStatusCode.OK
-                              || downloadResponse.Status == (int)HttpStatusCode.PartialContent)
-                        {
-                            // for very small files on this version of the SDK the returned status will be 206 (PartialContent)
-                            //     because the download is using range bytes and if they all fit in the first range call then
-                            //     206 is returned even though it's complete: https://github.com/Azure/azure-sdk-for-net/issues/17945
-                            var resultMetadata = new StreamRecordMetadata(
-                                id,
-                                this.DefaultSerializerRepresentation,
-                                identifierTypeRepresentation.ToWithAndWithoutVersion(),
-                                objectTypeRepresentation.ToWithAndWithoutVersion(),
-                                new NamedValue<string>[0],
-                                DateTime.UtcNow,
-                                null);
+                    var blobClient = containerClient.GetBlobReferenceFromServer(id);
+                    var blobProperties = blobClient.Properties;
+                    var bytes = new byte[blobProperties.Length];
+                    var bytesCopied = blobClient.DownloadToByteArray(bytes, 0);
+                    bytesCopied.MustForOp("downloadBytes").BeEqualTo((int)blobProperties.Length);
 
-                            result = new StreamRecord(
-                                blobProperties.Value.BlobSequenceNumber,
-                                resultMetadata,
-                                new BinaryDescribedSerialization(
-                                    objectTypeRepresentation,
-                                    this.DefaultSerializerRepresentation,
-                                    destinationStream.ToArray()));
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException(Invariant($"Error download blob: {downloadResponse.ReasonPhrase}."));
-                        }
-                    }
+                    var resultMetadata = new StreamRecordMetadata(
+                        id,
+                        this.DefaultSerializerRepresentation,
+                        identifierTypeRepresentation.ToWithAndWithoutVersion(),
+                        objectTypeRepresentation.ToWithAndWithoutVersion(),
+                        new NamedValue<string>[0],
+                        DateTime.UtcNow,
+                        null);
+
+                    result = new StreamRecord(
+                        0,
+                        resultMetadata,
+                        new BinaryDescribedSerialization(
+                            objectTypeRepresentation,
+                            this.DefaultSerializerRepresentation,
+                            bytes));
                 });
 
             return result;
@@ -193,16 +176,10 @@ namespace Naos.Azure.Protocol.Blob.Client
                 operation,
                 containerClient =>
                 {
-                    var blobClient = containerClient.GetBlobClient(operation.Metadata.StringSerializedId);
-                    var blobUploadOptions = new BlobUploadOptions
-                                            {
-                                                Tags = tags,
-                                            };
+                    var blobClient = containerClient.GetBlockBlobReference(operation.Metadata.StringSerializedId);
+                    blobClient.UploadFromByteArray(binaryPayload.SerializedPayload, 0, binaryPayload.SerializedPayload.Length);
 
-                    var binaryData = new BinaryData(binaryPayload.SerializedPayload);
-                    var uploadResponse = blobClient.Upload(binaryData, blobUploadOptions);
-
-                    result = new PutRecordResult(uploadResponse.Value.BlobSequenceNumber);
+                    result = new PutRecordResult(0);
                 });
 
             return result;
@@ -274,9 +251,9 @@ namespace Naos.Azure.Protocol.Blob.Client
                 operation,
                 containerClient =>
                 {
-                    var blobs = containerClient.GetBlobs(BlobTraits.None, BlobStates.None);
+                    var blobs = containerClient.ListBlobs();
                     result = blobs
-                            .Select(_ => new StringSerializedIdentifier(_.Name, identifierType))
+                            .Select(_ => new StringSerializedIdentifier(new CloudBlob(_.Uri).Name, identifierType))
                             .ToList();
                 });
 
@@ -320,7 +297,7 @@ namespace Naos.Azure.Protocol.Blob.Client
             Justification = "Keeping for use on subsequent calls and disposed ")]
         private void RunContainerClientOperation(
             ISpecifyResourceLocator operation,
-            Action<BlobContainerClient> action)
+            Action<CloudBlobContainer> action)
         {
             operation.MustForArg(nameof(operation)).NotBeNull();
             action.MustForArg(nameof(action)).NotBeNull();
@@ -329,25 +306,10 @@ namespace Naos.Azure.Protocol.Blob.Client
                 (ConnectionStringBlobContainerResourceLocator)(operation?.SpecifiedResourceLocator
                                                             ?? this.ResourceLocatorProtocols.Execute(new GetAllResourceLocatorsOp()).Single());
 
-            // this is apparently the only way to set the timeout: https://github.com/Azure/azure-sdk-for-net/issues/9212
-            using (var httpClient = new HttpClient
-                                    {
-                                        Timeout = resourceLocator.Timeout,
-                                    })
-            {
-                var blobClientOptions = new BlobClientOptions
-                                        {
-                                            Transport = new HttpClientTransport(httpClient),
-                                            Retry =
-                                            {
-                                                NetworkTimeout = resourceLocator.Timeout,
-                                            },
-                                        };
-
-                var serviceClient = new BlobServiceClient(resourceLocator.ConnectionString, blobClientOptions);
-                var containerClient = serviceClient.GetBlobContainerClient(resourceLocator.ContainerName);
-                action(containerClient);
-            }
+            var storageAccount = CloudStorageAccount.Parse(resourceLocator.ConnectionString);
+            var blobClient = storageAccount.CreateCloudBlobClient();
+            var blobContainer = blobClient.GetContainerReference(resourceLocator.ContainerName);
+            action(blobContainer);
         }
     }
 }
