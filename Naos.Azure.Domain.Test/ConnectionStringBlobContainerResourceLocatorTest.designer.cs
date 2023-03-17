@@ -37,24 +37,7 @@ namespace Naos.Azure.Domain.Test
 
     public static partial class ConnectionStringBlobContainerResourceLocatorTest
     {
-        private static readonly StringRepresentationTestScenarios<ConnectionStringBlobContainerResourceLocator> StringRepresentationTestScenarios = new StringRepresentationTestScenarios<ConnectionStringBlobContainerResourceLocator>()
-            .AddScenario(() =>
-                new StringRepresentationTestScenario<ConnectionStringBlobContainerResourceLocator>
-                {
-                    Name = "Default Code Generated Scenario",
-                    SystemUnderTestExpectedStringRepresentationFunc = () =>
-                    {
-                        var systemUnderTest = A.Dummy<ConnectionStringBlobContainerResourceLocator>();
-
-                        var result = new SystemUnderTestExpectedStringRepresentation<ConnectionStringBlobContainerResourceLocator>
-                        {
-                            SystemUnderTest = systemUnderTest,
-                            ExpectedStringRepresentation = Invariant($"Naos.Azure.Domain.ConnectionStringBlobContainerResourceLocator: ContainerName = {systemUnderTest.ContainerName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, ConnectionString = {systemUnderTest.ConnectionString?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, Timeout = {systemUnderTest.Timeout.ToString() ?? "<null>"}."),
-                        };
-
-                        return result;
-                    },
-                });
+        private static readonly StringRepresentationTestScenarios<ConnectionStringBlobContainerResourceLocator> StringRepresentationTestScenarios = new StringRepresentationTestScenarios<ConnectionStringBlobContainerResourceLocator>();
 
         private static readonly ConstructorArgumentValidationTestScenarios<ConnectionStringBlobContainerResourceLocator> ConstructorArgumentValidationTestScenarios = new ConstructorArgumentValidationTestScenarios<ConnectionStringBlobContainerResourceLocator>()
             .AddScenario(() =>
@@ -332,6 +315,32 @@ namespace Naos.Azure.Domain.Test
                 // Assert
                 actualInterfaces.AsTest().Must().ContainElement(typeof(IModel<ConnectionStringBlobContainerResourceLocator>));
                 expectedModelMethodHashes.Except(actualModelMethodHashes).AsTest().Must().BeEmptyEnumerable();
+            }
+
+            [Fact]
+            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+            public static void ConnectionStringBlobContainerResourceLocator___Should_declare_ToString_method___When_reflecting()
+            {
+                // Arrange
+                var expected = typeof(ConnectionStringBlobContainerResourceLocator);
+
+                // Act
+                var actual = expected.GetMethodsFiltered(MemberRelationships.DeclaredInType, MemberOwners.Instance, MemberAccessModifiers.Public).Single(_ => (_.Name == nameof(ToString)) && (!_.GetParameters().Any()));
+
+                // Assert
+                actual.DeclaringType.AsTest().Must().BeEqualTo(expected);
             }
 
             [Fact]

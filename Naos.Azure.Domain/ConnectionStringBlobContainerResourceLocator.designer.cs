@@ -198,14 +198,5 @@ namespace Naos.Azure.Domain
 
             return result;
         }
-
-        /// <inheritdoc />
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-        public override string ToString()
-        {
-            var result = Invariant($"Naos.Azure.Domain.ConnectionStringBlobContainerResourceLocator: ContainerName = {this.ContainerName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, ConnectionString = {this.ConnectionString?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, Timeout = {this.Timeout.ToString() ?? "<null>"}.");
-
-            return result;
-        }
     }
 }

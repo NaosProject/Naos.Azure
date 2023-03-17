@@ -12,7 +12,7 @@ namespace Naos.Azure.Domain.Test
     using System.Linq;
 
     using FakeItEasy;
-
+    using OBeautifulCode.Assertion.Recipes;
     using OBeautifulCode.AutoFakeItEasy;
     using OBeautifulCode.CodeAnalysis.Recipes;
     using OBeautifulCode.CodeGen.ModelObject.Recipes;
@@ -29,6 +29,22 @@ namespace Naos.Azure.Domain.Test
         [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = ObcSuppressBecause.CA1810_InitializeReferenceTypeStaticFieldsInline_FieldsDeclaredInCodeGeneratedPartialTestClass)]
         static ConnectionStringBlobContainerResourceLocatorTest()
         {
+        }
+
+        [Fact]
+        public static void ToString____Should_not_have_sensitive_information()
+        {
+            // Arrange
+            var connectionString = "ThisConnectionStringShouldNotBeInToString";
+            var timeout = TimeSpan.FromHours(10);
+
+            var systemUnderTest = new ConnectionStringBlobContainerResourceLocator("containerName", connectionString, timeout);
+
+            // Act
+            var actual = systemUnderTest.ToString();
+
+            // Assert
+            actual.MustForTest().BeEqualTo("Naos.Azure.Domain.ConnectionStringBlobContainerResourceLocator: ContainerName = containerName, ConnectionString = ***, Timeout = 10:00:00.");
         }
     }
 }

@@ -7,14 +7,16 @@
 namespace Naos.Azure.Domain
 {
     using System;
+    using System.Globalization;
     using Naos.Database.Domain;
     using OBeautifulCode.Assertion.Recipes;
+    using OBeautifulCode.Type;
     using static System.FormattableString;
 
     /// <summary>
     /// Azure Blob Container implementation of <see cref="IResourceLocator"/>, authenticating via a connection string.
     /// </summary>
-    public partial class ConnectionStringBlobContainerResourceLocator : ResourceLocatorBase
+    public partial class ConnectionStringBlobContainerResourceLocator : ResourceLocatorBase, IDeclareToStringMethod
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectionStringBlobContainerResourceLocator"/> class.
@@ -49,5 +51,14 @@ namespace Naos.Azure.Domain
         /// Gets the timeout.
         /// </summary>
         public TimeSpan Timeout { get; private set; }
+
+        /// <inheritdoc cref="IDeclareToStringMethod" />
+        public override string ToString()
+        {
+            var connectionStringPiece = this.ConnectionString != null ? "***" : "<null>";
+            var result = Invariant($"Naos.Azure.Domain.ConnectionStringBlobContainerResourceLocator: ContainerName = {this.ContainerName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, ConnectionString = {connectionStringPiece}, Timeout = {this.Timeout.ToString() ?? "<null>"}.");
+
+            return result;
+        }
     }
 }
