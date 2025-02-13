@@ -29,6 +29,9 @@ namespace Naos.Azure.Domain.Test
         [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = ObcSuppressBecause.CA1810_InitializeReferenceTypeStaticFieldsInline_FieldsDeclaredInCodeGeneratedPartialTestClass)]
         static ConnectionStringBlobContainerResourceLocatorTest()
         {
+            StringRepresentationTestScenarios
+                .RemoveAllScenarios()
+                .AddScenario(StringRepresentationTestScenario<ConnectionStringBlobContainerResourceLocator>.ForceGeneratedTestsToPassAndWriteMyOwnScenario);
         }
 
         [Fact]
