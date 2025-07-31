@@ -14,6 +14,7 @@ namespace Naos.Azure.Protocol.Blob.Client.Test
     using OBeautifulCode.Assertion.Recipes;
     using OBeautifulCode.Serialization;
     using OBeautifulCode.Serialization.Json;
+    using OBeautifulCode.Serialization.Recipes;
     using Xunit;
 
     /// <summary>
@@ -28,14 +29,14 @@ namespace Naos.Azure.Protocol.Blob.Client.Test
             var connectionString = "DefaultEndpointsProtocol=https;AccountName=...";
             var readStream = new BlobStream(
                 "Testing",
-                new ObcSimplifyingSerializerFactory(new JsonSerializerFactory()),
+                SerializerFactories.StandardSimplifying,
                 new SerializerRepresentation(SerializationKind.Json),
                 SerializationFormat.Binary,
                 new SingleResourceLocatorProtocols(new ConnectionStringBlobContainerResourceLocator(containerName, connectionString, TimeSpan.FromSeconds(150))));
 
             var writeStream = new BlobStream(
                 "Testing",
-                new ObcSimplifyingSerializerFactory(new JsonSerializerFactory()),
+                SerializerFactories.StandardSimplifying,
                 new SerializerRepresentation(SerializationKind.Json),
                 SerializationFormat.Binary,
                 new SingleResourceLocatorProtocols(new ConnectionStringBlobContainerResourceLocator(containerName, connectionString, TimeSpan.FromSeconds(150))));
