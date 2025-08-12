@@ -109,9 +109,9 @@
     <Compile Include=".recipes\OBeautifulCode.Type\ToStringReadableOptions.cs" />
     <Compile Include=".recipes\OBeautifulCode.Type\ToStringXmlDocOptions.cs" />
     <Compile Include=".recipes\OBeautifulCode.Type\TypeExtensions.cs" />
-    <Compile Include="AzureBlobStreamConfig.cs" />
-    <Compile Include="AzureBlobStreamConfig.designer.cs">
-      <DependentUpon>AzureBlobStreamConfig.cs</DependentUpon>
+    <Compile Include="AzureBlobStandardStreamConfig.cs" />
+    <Compile Include="AzureBlobStandardStreamConfig.designer.cs">
+      <DependentUpon>AzureBlobStandardStreamConfig.cs</DependentUpon>
     </Compile>
     <Compile Include="ConnectionStringBlobContainerResourceLocator.cs" />
     <Compile Include="ConnectionStringBlobContainerResourceLocator.designer.cs">

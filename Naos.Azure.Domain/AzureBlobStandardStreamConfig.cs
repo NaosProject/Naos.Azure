@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AzureBlobStreamConfig.cs" company="Naos Project">
+// <copyright file="AzureBlobStandardStreamConfig.cs" company="Naos Project">
 //    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -14,19 +14,19 @@ namespace Naos.Azure.Domain
     using SerializationFormat = OBeautifulCode.Serialization.SerializationFormat;
 
     /// <summary>
-    /// Config object to contain necessary information to inflate an AzureBlobStream.
+    /// Config object to contain necessary information to inflate an Azure Blob Standard Stream.
     /// </summary>
-    public partial class AzureBlobStreamConfig : StandardStreamConfigBase
+    public partial class AzureBlobStandardStreamConfig : StandardStreamConfigBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AzureBlobStreamConfig"/> class.
+        /// Initializes a new instance of the <see cref="AzureBlobStandardStreamConfig"/> class.
         /// </summary>
-        /// <param name="name">Name of the stream.</param>
-        /// <param name="accessKinds">Access the stream has.</param>
-        /// <param name="defaultSerializerRepresentation">Default <see cref="SerializerRepresentation"/> to use (used for identifier serialization).</param>
-        /// <param name="defaultSerializationFormat">Default <see cref="SerializationFormat"/> to use.</param>
+        /// <param name="name">The name of the stream.</param>
+        /// <param name="accessKinds">The kind of access that the stream has.</param>
+        /// <param name="defaultSerializerRepresentation">The serializer representation to use to get a serializer to use when serializing objects (not identifiers) into record payloads to put.</param>
+        /// <param name="defaultSerializationFormat">The serialization format to use when serializing objects (not identifiers) into record payloads to put.</param>
         /// <param name="allLocators">All <see cref="ConnectionStringBlobContainerResourceLocator"/>'s.</param>
-        public AzureBlobStreamConfig(
+        public AzureBlobStandardStreamConfig(
             string name,
             StreamAccessKinds accessKinds,
             SerializerRepresentation defaultSerializerRepresentation,

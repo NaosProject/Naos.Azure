@@ -41,7 +41,7 @@ namespace Naos.Azure.Domain.Test
 
                     var streamAccessKinds = A.Dummy<StreamAccessKinds>().ThatIsNot(StreamAccessKinds.None);
 
-                    return new AzureBlobStreamConfig(
+                    return new AzureBlobStandardStreamConfig(
                         A.Dummy<string>(),
                         streamAccessKinds,
                         A.Dummy<SerializerRepresentation>(),

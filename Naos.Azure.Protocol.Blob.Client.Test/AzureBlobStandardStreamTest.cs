@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BlobStreamTest.cs" company="Naos Project">
+// <copyright file="AzureBlobStandardStreamTest.cs" company="Naos Project">
 //    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -20,21 +20,21 @@ namespace Naos.Azure.Protocol.Blob.Client.Test
     /// <summary>
     /// TODO: Starting point for new project.
     /// </summary>
-    public static partial class BlobStreamTest
+    public static partial class AzureBlobStandardStreamTest
     {
         [Fact(Skip = "For live testing.")]
         public static void Method___Should_do_something___When_called()
         {
             var containerName = "test-container";
             var connectionString = "DefaultEndpointsProtocol=https;AccountName=...";
-            var readStream = new BlobStream(
+            var readStream = new AzureBlobStandardStream(
                 "Testing",
                 SerializerFactories.StandardSimplifying,
                 new SerializerRepresentation(SerializationKind.Json),
                 SerializationFormat.Binary,
                 new SingleResourceLocatorProtocols(new ConnectionStringBlobContainerResourceLocator(containerName, connectionString, TimeSpan.FromSeconds(150))));
 
-            var writeStream = new BlobStream(
+            var writeStream = new AzureBlobStandardStream(
                 "Testing",
                 SerializerFactories.StandardSimplifying,
                 new SerializerRepresentation(SerializationKind.Json),
