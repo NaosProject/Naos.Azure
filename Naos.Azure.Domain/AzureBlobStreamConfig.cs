@@ -6,20 +6,17 @@
 
 namespace Naos.Azure.Domain
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Naos.Database.Domain;
     using OBeautifulCode.Assertion.Recipes;
     using OBeautifulCode.Serialization;
-    using OBeautifulCode.Type;
-    using static System.FormattableString;
     using SerializationFormat = OBeautifulCode.Serialization.SerializationFormat;
 
     /// <summary>
     /// Config object to contain necessary information to inflate an AzureBlobStream.
     /// </summary>
-    public partial class AzureBlobStreamConfig : StreamConfigBase
+    public partial class AzureBlobStreamConfig : StandardStreamConfigBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureBlobStreamConfig"/> class.

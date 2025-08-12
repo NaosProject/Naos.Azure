@@ -9,18 +9,13 @@ namespace Naos.Azure.Protocol.Blob.Client
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.IO;
     using System.Linq;
-    using System.Net;
-    using System.Security.Cryptography;
-    using global::Microsoft.Azure.Storage.Blob.Protocol;
     using Microsoft.Azure.Storage;
     using Microsoft.Azure.Storage.Blob;
     using Naos.Azure.Domain;
     using Naos.CodeAnalysis.Recipes;
     using Naos.Database.Domain;
     using OBeautifulCode.Assertion.Recipes;
-    using OBeautifulCode.Execution.Recipes;
     using OBeautifulCode.Representation.System;
     using OBeautifulCode.Serialization;
     using OBeautifulCode.String.Recipes;
@@ -30,15 +25,9 @@ namespace Naos.Azure.Protocol.Blob.Client
     /// <summary>
     /// Thin Azure Blob implementation of <see cref="IStandardStream"/>.
     /// </summary>
-    [SuppressMessage(
-        "Microsoft.Maintainability",
-        "CA1506:AvoidExcessiveClassCoupling",
-        Justification = NaosSuppressBecause.CA1506_AvoidExcessiveClassCoupling_DisagreeWithAssessment)]
-    [SuppressMessage(
-        "Microsoft.Naming",
-        "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
-        Justification = NaosSuppressBecause.CA1711_IdentifiersShouldNotHaveIncorrectSuffix_TypeNameAddedAsSuffixForTestsWhereTypeIsPrimaryConcern)]
-    public partial class BlobStream : StandardStreamBase
+    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = NaosSuppressBecause.CA1506_AvoidExcessiveClassCoupling_DisagreeWithAssessment)]
+    [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix", Justification = NaosSuppressBecause.CA1711_IdentifiersShouldNotHaveIncorrectSuffix_TypeNameAddedAsSuffixForTestsWhereTypeIsPrimaryConcern)]
+    public class BlobStream : StandardStreamBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BlobStream"/> class.
@@ -73,39 +62,25 @@ namespace Naos.Azure.Protocol.Blob.Client
             var identifierTypeRepresentation = typeof(string).ToRepresentation();
             var objectTypeRepresentation = typeof(byte[]).ToRepresentation();
 
-            operation.RecordNotFoundStrategy.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordNotFoundStrategy)}"))
-                     .BeEqualTo(RecordNotFoundStrategy.ReturnDefault);
-            operation.RecordFilter.DeprecatedIdTypes.MustForArg(
-                          Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.DeprecatedIdTypes)}"))
-                     .BeNull();
-            operation.RecordFilter.IdTypes.MustForArg(
-                          Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.IdTypes)}"))
-                     .BeNull();
-            operation.RecordFilter.InternalRecordIds.MustForArg(
-                          Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.InternalRecordIds)}"))
-                     .BeNull();
-            operation.RecordFilter.ObjectTypes.Single()
-                     .MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.ObjectTypes)}"))
-                     .BeEqualTo(objectTypeRepresentation);
-            operation.RecordFilter.Tags.MustForArg(
-                          Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Tags)}"))
-                     .BeNull();
-            operation.RecordFilter.Ids.MustForArg(
-                          Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Ids)}"))
-                     .NotBeEmptyEnumerable()
-                     .And()
-                     .HaveCount(1);
+            operation.RecordNotFoundStrategy.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordNotFoundStrategy)}")).BeEqualTo(RecordNotFoundStrategy.ReturnDefault);
+            operation.RecordFilter.DeprecatedIdTypes.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.DeprecatedIdTypes)}")).BeNull();
+            operation.RecordFilter.IdTypes.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.IdTypes)}")).BeNull();
+            operation.RecordFilter.InternalRecordIds.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.InternalRecordIds)}")).BeNull();
+            operation.RecordFilter.ObjectTypes.Single().MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.ObjectTypes)}")).BeEqualTo(objectTypeRepresentation);
+            operation.RecordFilter.Tags.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Tags)}")).BeNull();
+            operation.RecordFilter.Ids.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Ids)}")).NotBeEmptyEnumerable().And().HaveCount(1);
 
             var id = operation.RecordFilter.Ids.Select(
-                                   _ =>
-                                   {
-                                       _.IdentifierType.RemoveAssemblyVersions()
-                                        .MustForArg(
-                                             Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Ids)}"))
-                                        .BeEqualTo(identifierTypeRepresentation.RemoveAssemblyVersions());
-                                       return _.StringSerializedId;
-                                   })
-                              .Single();
+                    _ =>
+                    {
+                        _.IdentifierType.RemoveAssemblyVersions()
+                            .MustForArg(
+                                Invariant(
+                                    $"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Ids)}"))
+                            .BeEqualTo(identifierTypeRepresentation.RemoveAssemblyVersions());
+                        return _.StringSerializedId;
+                    })
+                .Single();
 
             StreamRecord result = null;
             this.RunContainerClientOperation(
@@ -130,10 +105,7 @@ namespace Naos.Azure.Protocol.Blob.Client
                     result = new StreamRecord(
                         0,
                         resultMetadata,
-                        new BinaryDescribedSerialization(
-                            objectTypeRepresentation,
-                            this.DefaultSerializerRepresentation,
-                            bytes));
+                        new BinaryStreamRecordPayload(bytes));
                 });
 
             return result;
@@ -150,10 +122,8 @@ namespace Naos.Azure.Protocol.Blob.Client
         public override PutRecordResult Execute(
             StandardPutRecordOp operation)
         {
-            operation.ExistingRecordStrategy.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.ExistingRecordStrategy)}"))
-                     .BeEqualTo(ExistingRecordStrategy.None, Invariant($"No support for {nameof(ExistingRecordStrategy)}."));
-            operation.Payload.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.Payload)}"))
-                     .BeAssignableToType<BinaryDescribedSerialization>(Invariant($"Only binary payloads supported."));
+            operation.ExistingRecordStrategy.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.ExistingRecordStrategy)}")).BeEqualTo(ExistingRecordStrategy.None, Invariant($"No support for {nameof(ExistingRecordStrategy)}."));
+            operation.Payload.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.Payload)}")).BeAssignableToType<BinaryStreamRecordPayload>(Invariant($"Only binary payloads supported."));
 
             var tags = operation
                       .Metadata
@@ -169,7 +139,7 @@ namespace Naos.Azure.Protocol.Blob.Client
                     operation.Metadata.ObjectTimestampUtc.ToStringInvariantPreferred());
             }
 
-            var binaryPayload = (BinaryDescribedSerialization)operation.Payload;
+            var binaryPayload = (BinaryStreamRecordPayload)operation.Payload;
 
             PutRecordResult result = null;
             this.RunContainerClientOperation(
@@ -226,24 +196,12 @@ namespace Naos.Azure.Protocol.Blob.Client
         {
             var identifierType = typeof(string).ToRepresentation();
 
-            operation.RecordFilter.DeprecatedIdTypes.MustForArg(
-                          Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.DeprecatedIdTypes)}"))
-                     .BeNull();
-            operation.RecordFilter.IdTypes.Single()
-                     .MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.IdTypes)}"))
-                     .BeEqualTo(identifierType);
-            operation.RecordFilter.InternalRecordIds.MustForArg(
-                          Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.InternalRecordIds)}"))
-                     .BeNull();
-            operation.RecordFilter.ObjectTypes.MustForArg(
-                          Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.ObjectTypes)}"))
-                     .BeNull();
-            operation.RecordFilter.Tags.MustForArg(
-                          Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Tags)}"))
-                     .BeNull();
-            operation.RecordFilter.Ids.MustForArg(
-                          Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Ids)}"))
-                     .BeNull();
+            operation.RecordFilter.DeprecatedIdTypes.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.DeprecatedIdTypes)}")).BeNull();
+            operation.RecordFilter.IdTypes.Single().MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.IdTypes)}")).BeEqualTo(identifierType);
+            operation.RecordFilter.InternalRecordIds.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.InternalRecordIds)}")).BeNull();
+            operation.RecordFilter.ObjectTypes.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.ObjectTypes)}")).BeNull();
+            operation.RecordFilter.Tags.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Tags)}")).BeNull();
+            operation.RecordFilter.Ids.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Ids)}")).BeNull();
 
             IReadOnlyCollection<StringSerializedIdentifier> result = new List<StringSerializedIdentifier>();
 
